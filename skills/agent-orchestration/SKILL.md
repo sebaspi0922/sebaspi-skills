@@ -116,6 +116,10 @@ Stop and get an explicit yes before:
 - Touching protected config, permissions or credentials.
 - Picking among options that are matters of taste or business judgment.
 
+Put a review gate before every expensive step (final render, deploy, bulk send, paid run): the worker stops and
+hands over a review packet of at most 300 words: what it did and recommends, the evidence (paths to previews,
+frame sheets, test output), the risks, and go or stop. Cheap previews first, the expensive step only after a yes.
+
 For deadline work: start first whatever is slow and doesn't depend on decisions; for the rest, have workers
 propose options with evidence and stop until approved. Login codes and one-time tokens expire: request them
 only when the human is ready, and never write tokens into chat or logs.
@@ -131,6 +135,10 @@ Treat every worker report as unverified.
 - When a worker cites a blocker ("bug #123 breaks X", "repo doesn't exist"), check the latest release or the link yourself before acting on it.
 - Treat reviewer claims the same way: A/B against the base before "restoring" anything.
 - Multiple research workers get **cross-checked against each other**, not concatenated. Verify primary sources while they run.
+- **Two-agent QA** (cheap, between "verify it yourself" and a full panel): one fresh-context worker reads only the
+  original request and the deliverable and writes `qa-checklist.md` with checkable PASS/FAIL items ("all 12 links
+  return 200", not "links work"). A different worker, which never saw how the list was written, runs it and attaches
+  evidence to each item (quoted line, count, screenshot). Skim the list before it runs. A small model is enough.
 - Report anything you couldn't test as untested. Report honest numbers ("16% so far, here's the path to 30%").
 
 ## 7. Adversarial and multi-model review
@@ -138,6 +146,8 @@ Treat every worker report as unverified.
 - **Independent attempts:** same question to 2-4 workers with *different* framings; same framing collapses to one answer. Ask for located, falsifiable claims (`file:line` + claim), not "auth has problems".
 - **Refuters:** a second batch tries to break each claim with counter-evidence and returns `id|survives|evidence`. Give them the sources, not the attempts' reasoning. Surface survivors only; stop when a round adds none, cap at 3 rounds.
 - Use the same mechanic on your own heuristics before applying them at scale.
+- **Nobody approves their own work.** The reviewer is always a different worker, profile or model than the author;
+  if your task board supports it, enforce it there.
 - **Panel review:** one strong model from each of 2-3 different providers, read-only, scored out of 10. If a named member is unavailable, report it instead of silently substituting.
 - Don't wait idle: check each result against the code as it lands and decide fixes while others run.
 
@@ -146,10 +156,14 @@ Treat every worker report as unverified.
 When iterating until a reviewer or judge is satisfied:
 - **You write the harness, outside the author's workspace**, and lock it (read-only + checksum; re-verify the checksum each round). Threshold and round cap live in the harness, not in the brief, so the author can't lower the bar.
 - **Blind judges:** don't tell them the threshold, the goal, that there are rounds, or past scores. Rubric + "grade honestly". Fresh evaluation each round. A judge that fails to answer = the round doesn't pass.
-- **Budget:** default 3 rounds; first round full, later rounds only changed code and open findings. Extend (up to ~5) only for security, data loss or concurrency while a real finding stays open. Stop early if a round returns only nits.
+- **Budget:** default 3 rounds; first round full, later rounds only changed code and open findings. Extend (up to ~5) only for security, data loss or concurrency while a real finding stays open. Still not approved
+  after round 3: escalate to the coordinator or the human with the ledger instead of opening round 4 by habit. Stop early if a round returns only nits.
 - Severity: `blocker` = intended case is wrong; `should` = real bug callers will hit; `nit` = everything else, whatever label it came with. Re-grade every finding yourself.
 - Fix with the smallest change: prefer deleting or narrowing over new locks, caches, helpers or options. Add one focused test that fails without the fix. If review grew the diff, cut first.
 - Disagree with evidence (`file:line`, test output). Decline out-of-scope items in one line and list them as follow-ups. Never agree just to end the loop.
+- In visual or animation loops, fix in a fixed order: structure (shots, cuts, length) → timing → easing → look
+  (type, colour, scale, position) → detail (grain, blur, edges). Each step moves the ones after it, so polishing look
+  before the cuts are settled is wasted work.
 - Keep a ledger: id, severity, outcome (fixed / disagreed / declined), usage if reported. Never guess usage.
 - Exit: approval on the current diff with no open blocker/should, **or** stuck (disputed after two replies) **or** budget exhausted. Budget end is not approval: show both sides in 2-3 lines and let the human decide.
 - If the cap is reached without passing: ship nothing automatically; present the best version, the score table per round, cost, and what every judge asked for in common, with options and their cost.
@@ -160,6 +174,9 @@ When iterating until a reviewer or judge is satisfied:
 - Long work goes to the background with a completion notification; keep the main conversation free and send short progress notes.
 - Right after launching, set up a watcher (notify on exit, or a poll every 20-60 s that exits on completed/failed). When it fires, verify the deliverable and report without waiting to be asked.
 - Read the whole log, not just the tail: many CLIs print the answer before a footer of session metadata.
+- One `PROGRESS.md` per worker, one timestamped line per step. Send new instructions through the normal channel
+  **and** append them to that file: a message can sit unread while the worker is inside a long command. No new line
+  for a long while means stalled; replace a hung worker with a fresh one scoped to the remaining fix.
 - A timeout, error or no reply is never approval or success.
 - Usage limits **pause, never degrade**. Near a quota: stop launching new workers, then tell running ones to commit progress, write a `PROGRESS.md` with the exact next step, and stop. Resume after the reset with the same model, effort and brief. Don't downgrade or cut scope to make it fit; order work so the critical part finishes first.
 - Parent restart: write a `HANDOFF.md` (why it stopped, which workers are dead, per-branch scorecard, exact re-dispatch text) after snapshotting every dirty worktree into a `wip:` commit.
