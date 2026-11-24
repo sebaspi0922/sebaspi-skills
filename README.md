@@ -7,11 +7,11 @@ They follow the open [Agent Skills](https://agentskills.io) format and work with
 
 | Skill | What it does |
 |---|---|
+| [learning-videos](skills/learning-videos) | Short videos to learn or review any topic: testable goals, verified facts, script with retrieval pauses, Manim/HTML/slides renderer choice, voice and captions, plus a checker script (codec, loudness, silences, black frames, contact sheet). |
+| [socratic-coding-tutor](skills/socratic-coding-tutor) | Teach programming while the learner writes the code: one small step at a time, predict-then-run, review their exact attempt, never hand over the finished app. |
+| [local-voice-enhance](skills/local-voice-enhance) | Local "Podcast Enhance" for phone/camera voice: DeepFilterNet + EQ + compression + matched loudness, originals untouched, sync and mix-balance checks. |
 | [no-ai-look-ui](skills/no-ai-look-ui) | Make web UIs that don't look AI-generated: principles, a table of "AI tells" with fixes, concrete defaults, review mode and checklist. |
-| [compatible-video-copy](skills/compatible-video-copy) | Safe ffmpeg recipe for an H.264/AAC MP4 that plays everywhere: original untouched, timecode stripped, audio tracks handled, ffprobe-verified. |
-| [lovable-vercel-workflow](skills/lovable-vercel-workflow) | Working on Lovable + GitHub + Vercel sites: right tool for code/data/images, deploy unblocking, known pitfalls, curl verification. |
 | [minecraft-content-manager](skills/minecraft-content-manager) | Install/update/remove/audit mods, packs, shaders and datapacks in one instance: Modrinth first, dependency graph, hashes, staging, backups, manifest. |
-| [change-watchers](skills/change-watchers) | Zero-token scheduled watchers that message only on real news (API first, silent baseline, state file), plus a Moodle recipe. |
 
 ## Install
 
