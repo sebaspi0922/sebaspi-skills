@@ -8,6 +8,7 @@ They follow the open [Agent Skills](https://agentskills.io) format and work with
 | Skill | What it does |
 |---|---|
 | [no-ai-look-ui](skills/no-ai-look-ui) | Make web UIs that don't look AI-generated: principles, a table of "AI tells" with fixes, concrete defaults, review mode and checklist. |
+| [agent-orchestration](skills/agent-orchestration) | Coordinate several coding agents: delegate vs do, self-contained briefs, model per stage, conflict-free parallel work, approval stops, independent verification, review loops, budgets. |
 | [minecraft-content-manager](skills/minecraft-content-manager) | Install/update/remove/audit mods, packs, shaders and datapacks in one instance: Modrinth first, dependency graph, hashes, staging, backups, manifest. |
 
 ## Install
